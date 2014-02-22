@@ -1,0 +1,266 @@
+Homework 1 for STATS216 by Bruno Pen Wu
+========================================================
+
+Question 1
+----------
+
+a) A **flexible method is better** in this case since it can take advantage of the extremely large sample size.
+
+b) An **inflexible method is better** in this case. Since the sample size is small, a more flexible model might run into the problem of *overfitting* and would probably have a *large variance* as a change in any of the data points will have more of an impact on $\hat f$.
+
+c) An **inflexible method is better** in this case. Since the variance of the error terms, $\mbox{Var}(\epsilon)$ is very high, it will likely cause a very flexible model to *overfit* as the flexible model will follow the "noise" too closely.
+
+d) A **flexible method is better** in this case. All else being equal, a more flexible model would capture a non-linear relationship (between response and predictors) better than an inflexible model (i.e. have a *lower bias* than an inflexible model). Since in this case, the $\sigma^2$ is small also, overfitting shouldn't be an issue - hence, another reason to use a more flexible model in this case.
+
+e) An **inflexible method is better** in this case. Although a more flexible model would (all else being equal) capture the highly non-linear relationship better, there is a problem in this case since the $\sigma^2$ is large. This would mean that a flexible model will have a very high likelihood of *overfitting* the data, causing the $\hat f$ to follow the "noise" too much. Hence, an inflexible method is probably better for this case.
+
+Question 2
+----------
+
+a) **Regression** - response is CEO salary and predictors are profit, number of employees, and industry. This is modeling for an **inference** since we are interested to find out which input variables affect the response, rather than to predict the value of the response itself. **n = 500 and p = 3**.
+
+b) **Unsupervised learning and classification** - Seems like there are two steps in the process to build a recommendation model. First, we need to use the set of unlabeled data we have (the ratings) to come up with some "meaningful segmentation" for the customers and the restaurants. This step involves both classification (using some kind of nearest neighbors perhaps to discern if there are "meaningful groups") and unsupervised learning (since we don't know the outcomes we are predicting - i.e. we don't know the number and type of "meaningful groupings" beforehand). Once we have determined these "meaningful groups", we can use them as predictors in the second step to build our recommendation model. The recommendation model is also a classification problem since the response is qualitative (to recommend or not). The recommendation model is a **prediction** as we are interested in the value of the response (to recommend or not). **n = 10,000 customers x 100 restuarants = 1,000,000 observations and p is unknown (we need to figure out what the predictors are using classification and unsupervised learning.**
+
+c) **Classification** - since the response is qualitative (a *success* of a *failure*), this is a classification problem. This is modeling for a **prediction** since we are interested in the value of the response (whether the new product launch will be a success of a failure) given the test set (our new product). **n = 20 and p = 13 (price, marketing budget, competition price, and 10 other variables)**
+
+d) **Regression** - the response is % change in US dollar and the predictors are % changes in the US stock market, the British market, and the German market. This is modeling for an **prediction** as we are mainly interested the value of the response (% change in US dollar) rather than how each of the individual variables (e.g. % in the US stock market) affects the dollar. **n = 52 (52 weeks of 2012) and p=3 (% changes in US, British and German markets).**
+
+Question 3
+----------
+
+a) 3 examples of classification:
+  1. **Hiring decision**
+    * Response: Good fit with company or not a good fit
+    * Predictors: Work history, education, income, age, leadership potential, IQ, EQ, culture, personality, etc.
+    * Goal: Prediction - predict whether candidate will be a good fit at the firm
+  2. **Airplanes preventative maintenance for safety and cost-savings**
+    * Response: Pass or need maintenance
+    * Predictors: Age, hours of flight, number of prior repairs, existing damages, size of craft, number of passengers handled, flight routes, etc.
+    * Goal: Prediction - predict if an aircraft is ready for maintenance
+  3. **Credit approval process**
+    * Response: Will default or will not default
+    * Predictors: Payment history, debt balance, income, wealth, marital status, age
+    * Goal: Prediction - to predict whether a loan should be approved
+
+b) 3 examples of regression:
+  1. **GDP**
+    * Response: GDP
+    * Predictors: Savings, Investment, Consumption, Government Spending, etc.
+    * Goal: Inference - to determine which factors are critical to increase the economic outputs of a country. 
+  2. **Population of endangered animals in an area**
+    * Response: Population of endangered animal
+    * Predictors: Size of human population in the area, amount and types of development, industrialization, pollution level, number and type of predators, birth rate, death rate, etc.
+    * Goal: Inference - to determine which factors are important to enhance the probability of survival for an endangered specie.
+  3. **Amount of potential foot traffic in a new area for real estate development**
+    * Response: Amount of foot traffic
+    * Predictors: Population size and density, transportation options and distance, income, walkability, climate, indoor/outdoor facilities, residential/CBD/industrial, neighboring facilities, etc.
+    * Goal: Prediction - predict the amount of foot traffic in a new area in order to determine how much retail development is suitable and what rent to charge tenants.
+
+c) 3 examples of unsupervised learning that might be useful:
+  1. **Predict which stocks will go up given a host of macroeconomic, industry, and company-specific data.**
+  2. **Determine what kind of car a buyer will be interested in given prior purchasing history and demographics.**
+  3. **Determine where crime will likely take place given prior crime data.**
+
+Question 4
+----------
+
+a) Reading the data:
+```{r}
+college = read.csv("College.csv")
+```
+
+b) Fix the first column (college names):
+```{r}
+rownames(college) = college[,1]
+college = college[,-1]
+```
+
+c) i. Use `summary()` function
+```{r}
+summary(college)
+```
+  ii. Use `pairs()` function for the first 10 columns of data
+```{r}
+pairs(college[,1:10])
+```
+  iii. Use `plot()` to create side-by-side boxplots of `Outstate` versus `Private`.
+```{r}
+attach(college)
+plot(Outstate~Private,xlab="Private",ylab="Outstate")
+```
+  iv. Create new variable called `Elite`.
+```{r}
+Elite = rep("No", nrow(college))
+Elite[Top10perc > 50] = "Yes" # The "Elite" vector will have a "Yes" whenever Top10perc is >50%
+Elite = as.factor(Elite)
+college = data.frame(college, Elite) #append the "Elite" vector to the "college" matrix
+```
+  Use `summary()` function to see how many elite universities there are:
+```{r}
+summary(Elite)
+```
+  **There are 78 elite universities.**
+  
+  Use `plot()` to produce side-by-side boxplots of `Outstate` and `Elite`:
+```{r}
+plot(Outstate~Elite,xlab="Elite",ylab="Outstate")
+```
+  v. Use `hist()` to produce a few histograms with differing numbers of bins
+```{r}
+par(mfrow=c(2,2)) #divide the print window into 4 regions
+hist(Books,breaks=30)
+hist(Accept,breaks=100)
+hist(F.Undergrad,breaks=10)
+hist(Personal,breaks=50)
+```
+
+Question 5
+----------
+
+a) Split the data set into training and test set of approx equal size:
+```{r}
+set.seed(5) #set seed first so that the sample() function will pick the same set of rows each time. This is better for reproducible results.
+indexes = sample(1:nrow(college), size=0.5*nrow(college)) #use sample() function to select rows from the original dataset
+college.train = college[indexes,] #use the selected rows for the training set
+college.test = college[-indexes,] #use the remaining rows for the test set
+```
+
+b) Fit a linear model on the training set. Exclude `Elite`, `Accept`, and `Enroll` predictors. Report on the training and test errors.
+```{r}
+lm.train = lm(Apps~.-Enroll-Accept-Elite,data=college.train) #fit a linear model on the training set
+```
+
+**The Mean Square Error for the training set is:**
+```{r}
+mean((college.train$Apps-predict(lm.train,data.frame(college.train)))^2)
+```
+
+**Mean Square Error for the test set is:**
+```{r}
+mean((college.test$Apps-predict(lm.train,data.frame(college.test)))^2)
+```
+
+c) Comment on the results: The test set MSE is much higher than the training set MSE. There might be ways to lower the test set MSE by improving the model itself and to make sure that outliers are excluded. Since outliers can reside in either the training set or the test set, I decided to run a regression on the *entire set* and run diagnostics on the *entire set* to see where the biggest outliers are.
+```{r}
+lm.entire = lm(Apps~.-Enroll-Accept-Elite,data=college) #regression on the entire data set 
+#get diagnostic on outliers/high leverage points
+par(mfrow=c(2,2))
+plot(lm.entire)
+```
+
+As can be seen from the "Residuals vs Fitted" plot, "Rutgers at New Brunswick" is clearly an outlier. So if we excluded it from our data set, it will prob lower the test MSE. It turns out that the "Rutgers" data point is in the test data set. So I proceeded to remove it by creating a new test data set (without Rutgers).
+
+```{r}
+college.test2 = college.test[-230,] #230th row is where Rutgers is in the test set
+
+#Now I can run the Mean Square Error again for the new test set to see if removing the outlier helped.
+mean((college.test2$Apps-predict(lm.train,data.frame(college.test2)))^2)
+```
+The test set MSE now dropped from 5591710 to 2764421. 
+
+Next, we can try to improve on the training model itself. We can check for non-linearity by looking at diagnostic plot. 
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm.train)
+```
+
+Doesn't look like non-lineariy is a big issue.
+
+We can then look at which predictors are the most important and only include the most statistically significant ones to obtain a more effective model.
+
+
+```{r}
+summary(lm.train)
+```
+
+**From looking at the p-values of the variables, only a few are statistically significant: `F.Undergrad`,`Room.Board`,`Expend`,`Grad.Rate`.** So I ran a regression on the training set for the statistically significant factors only and included an interaction term for `Room.Board` and `Expend` since room and board expenses would prob be higher in schools where there are higher expenditures for students.
+
+```{r}
+lm.train2 = lm(Apps~ F.Undergrad + Room.Board*Expend + Grad.Rate , data=college.train)
+summary(lm.train2)
+```
+
+The R-square for this new regression is almost exactly the same as the R-square for the previous regression which included all of the variables while the MSEs for the test set for these regressions are almost exactly the same. As an aside, even though the p-values for `Room.Board` and `Expend` became a lot less significant individually, according to the **hierarchical principle**, because their interactive term is present and is significant, we have to include the *main effects* as well. 
+
+d) Logistic regression. 
+
+First, we need to set up a new outcome variable (by adding a new column to the entire data set) that would be 1 when # apps >= median and 0 when # apps < median. Then we can run the logistics regression using this new outcome variable.
+
+```{r}
+#Create a new "ManyApps" variable and populating with all 0's
+ManyApps = rep(0,nrow(college))
+#Put in 1's for when # of apps >= the overall median # of apps
+ManyApps[college$Apps>=median(college$Apps)] = 1
+#Create a new logistics data set with additional "ManyApps" column
+college.glm = data.frame(college,ManyApps)
+```
+
+We can now set up the training and test data sets as before:
+```{r}
+college.glm.train = college.glm[indexes,] #using the same set of rows as in linear regression for the training set
+college.glm.test = college.glm[-indexes,] 
+```
+
+Take out the outlier from the test data set as we did in the linear regression:
+```{r}
+college.glm.test2 = college.glm.test[-230,] #230th row is where the outlier (Rutgers at New Brunswick) is in the test set
+```
+
+Now we can run the regression. First using all the variables (except the 3 that were asked to be excluded):
+```{r}
+glm.train = glm(ManyApps ~ .-Enroll - Accept -Elite, data = college.glm.train, family = binomial)
+```
+
+Take a look at which variables are significant:
+```{r}
+summary(glm.train)
+```
+
+It turns out that none of the variables are statistically significant using this logistics regression *when all of the variables included*. So we'll need to improve on this model first before looking at diagnostics. 
+
+To improve effectiveness of the model, we could exclude the `Apps` variable. Since the `Apps` variable is highly correlated with the `ManyApps` variable (in fact it's used to generate the `ManyApps` variable), we should exclude it from the regression:
+```{r}
+glm.train2 = glm(ManyApps ~ .- Enroll - Accept - Elite - Apps, data = college.glm.train, family = binomial)
+```
+
+Take a look at which variables are significant:
+```{r}
+summary(glm.train2)
+```
+We can see from the above table that according to this logistics regression, **the only statistically significant predictor is `F.Undergrad`.**
+
+Next we'll get the training and test missclassification rates:
+```{r}
+#First get the predicted probabilities from applying the train set and the test set to the training model
+glm.train.probs = predict(glm.train2, college.glm.train, type="response")
+glm.test.probs = predict(glm.train2, college.glm.test2, type="response")
+
+#Then create vectors of predicted results based on probabilities for both sets
+glm.train.pred = rep(0,nrow(college.glm.train))
+glm.train.pred[glm.train.probs > .5] = 1
+glm.test.pred = rep(0,nrow(college.glm.test2))
+glm.test.pred[glm.test.probs > .5] = 1
+```
+
+To get the misclassification rate for the training set:
+```{r}
+table(glm.train.pred, college.glm.train$ManyApps)
+mean(glm.train.pred != college.glm.train$ManyApps) 
+```
+**The misclassification rate for the training set is 8.7%.**
+
+To get the misclassification rate for the test set:
+```{r}
+table(glm.test.pred, college.glm.test2$ManyApps)
+mean(glm.test.pred != college.glm.test2$ManyApps)
+```
+**The misclassification rate for the test set is about 8%.**
+
+**Compare the results of the linear and the logistic models:**
+In comparing the results of the linear and logistic models, we should not only focus on the error rates. Because if we only looked at the error rates (for both training and test sets), we'd conclude that the logistics regression is superior to the linear regression.
+
+A better comparison is which model provides us with more insights on the response. The response in both cases are related to the number of applications - this is clearly a *quantitative* variable. But logistics regressions are only applicable to *qualitative* responses. In fact, we had to replace the quantitative variable `Apps` with the qualitative variable `ManyApps` in order to run the logistics regression.
+
+The logistics model in this case only tells us which factors contribute to putting each school above or below the median number of applications. To be able to predict this shouldn't be too difficult - in fact, only 1 predictor is needed: how large a school is (as measured by the number of full-time undergrads:`F.Undergrad`) and its accuracy is quite good (low misclassifcation errors). This makes sense: the larger the school, the more applications they receive (the higher the likelihood that `ManyApps`=1). We don't need many other predictors to figure this out. On the otherhand, predicting the actual number of applications will require "more information" (more predictors) and hence, the linear regressions involved more significant predictors. 
+
